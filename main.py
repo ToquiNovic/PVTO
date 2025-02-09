@@ -25,15 +25,16 @@ router = APIRouter()
 async def websocket_route(websocket: WebSocket):
     await websocket_endpoint(websocket, opensim)
 
-
 app.include_router(router)
 
 # Ruta para iniciar OpenSimulator manualmente
 @app.get("/start")
 async def start_opensim():
+    if opensim.running:
+        return {"error": "OpenSimulator ya está en ejecución."}
+
     opensim.start_process()
     
-    # Iniciar la lectura del proceso en un hilo separado
     output_thread = Thread(target=read_output, args=(opensim,))
     output_thread.start()
 
@@ -42,6 +43,9 @@ async def start_opensim():
 # Ruta para detener OpenSimulator manualmente
 @app.get("/stop")
 async def stop_opensim():
+    if not opensim.running:
+        return {"error": "OpenSimulator no está en ejecución."}
+
     opensim.stop_process()
     return {"message": "OpenSimulator detenido correctamente"}
 
