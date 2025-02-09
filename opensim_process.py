@@ -1,6 +1,6 @@
+# opensim_process.py
 import subprocess
 import os
-import datetime
 import asyncio
 
 class OpenSimProcess:
@@ -19,27 +19,6 @@ class OpenSimProcess:
             bufsize=1,
             cwd=self.working_dir
         )
-
-    def read_output(self):
-        while True:
-            output = self.process.stdout.readline()
-            if output == '' and self.process.poll() is not None:
-                break
-            if output:
-                self.console_buffer.append(output.strip())
-                print(output.strip())
-                self.console_event.set()
-
-                if 'Region' in output and not self.region_found:
-                    self.region_found = True
-                    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    log_file = os.path.join(self.working_dir, "region_log.txt")
-                    with open(log_file, 'a') as file:
-                        file.write(f"Servidor Iniciado at {timestamp}\n")
-                    print(f"Found region, logged at {timestamp}")
-
-                    self.process.stdin.write("alert hola\n")
-                    self.process.stdin.flush()
 
     def send_command(self, command):
         if self.process.stdin:
