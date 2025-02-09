@@ -39,6 +39,12 @@ async def start_opensim():
 
     return {"message": "OpenSimulator iniciado correctamente"}
 
+# Ruta para detener OpenSimulator manualmente
+@app.get("/stop")
+async def stop_opensim():
+    opensim.stop_process()
+    return {"message": "OpenSimulator detenido correctamente"}
+
 # Iniciar el servidor FastAPI
 if __name__ == "__main__":
    uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT)

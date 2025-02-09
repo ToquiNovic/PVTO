@@ -24,6 +24,14 @@ class OpenSimProcess:
                 cwd=self.working_dir
             )
             print("OpenSimulator iniciado correctamente.")
+            
+    def stop_process(self):
+        """ Detiene el proceso de OpenSimulator si está en ejecución. """
+        if self.process and self.process.poll() is None:
+            self.process.terminate()  
+            self.process.wait()  
+            self.process = None
+            print("OpenSimulator detenido correctamente.")
 
     def send_command(self, command):
         if self.process and self.process.stdin:
