@@ -1,4 +1,5 @@
 # main.py
+import os
 from threading import Thread
 import uvicorn
 from fastapi import FastAPI, WebSocket
@@ -6,11 +7,11 @@ from fastapi.routing import APIRouter
 
 from config import OPEN_SIM_DIR, OPEN_SIM_PATH, FASTAPI_HOST, FASTAPI_PORT
 from opensim_process import OpenSimProcess
-from opensim_reader import read_output
 from websocket_handler import websocket_endpoint
 from fastapi_routes import setup_routes
+from opensim_reader import read_output 
 
-# Instancia de OpenSimProcess para manejar el proceso
+# Instancia de OpenSimProcess
 opensim = OpenSimProcess(OPEN_SIM_PATH, OPEN_SIM_DIR)
 
 # Crear la aplicación FastAPI
@@ -24,19 +25,20 @@ router = APIRouter()
 async def websocket_route(websocket: WebSocket):
     await websocket_endpoint(websocket, opensim)
 
+
 app.include_router(router)
 
-# Iniciar el servidor FastAPI en un hilo separado
-def start_fastapi():
-    uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT)
+# Ruta para iniciar OpenSimulator manualmente
+@app.get("/start")
+async def start_opensim():
+    opensim.start_process()
+    
+    # Iniciar la lectura del proceso en un hilo separado
+    output_thread = Thread(target=read_output, args=(opensim,))
+    output_thread.start()
 
-fastapi_thread = Thread(target=start_fastapi)
-fastapi_thread.start()
+    return {"message": "OpenSimulator iniciado correctamente"}
 
-# Iniciar la lectura del proceso OpenSimulator en un hilo separado
-output_thread = Thread(target=read_output, args=(opensim,))
-output_thread.start()
-
-# Espera indefinida para que los hilos sigan funcionando
-output_thread.join()
-fastapi_thread.join()
+# Iniciar el servidor FastAPI
+if __name__ == "__main__":
+   uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT)

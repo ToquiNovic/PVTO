@@ -1,3 +1,4 @@
+# opensim_reader.py
 import datetime
 import os
 
@@ -12,6 +13,7 @@ def read_output(opensim):
         if output:
             opensim.console_buffer.append(output.strip())
             print(output.strip())
+
             opensim.console_event.set()
 
             if 'Region' in output and not opensim.region_found:
