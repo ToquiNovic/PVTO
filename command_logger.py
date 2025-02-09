@@ -17,7 +17,6 @@ class CommandLogger:
                 file.write("===== OpenSimulator Command History =====\n")
 
     def log_command(self, command):
-        """Registra un comando con marca de tiempo en CommandHistory.txt"""
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] {command}\n"
 

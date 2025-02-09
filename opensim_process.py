@@ -21,6 +21,7 @@ class OpenSimProcess:
     def start_process(self):
         with self.lock:
             if self.running:
+                send_pretty_message(self.console_buffer, self.websocket_manager,  "warning", "❌ OpenSimulator ya está en ejecución.")
                 print("❌ OpenSimulator ya está en ejecución.")
                 return
 
@@ -34,6 +35,7 @@ class OpenSimProcess:
                 cwd=self.working_dir
             )
             self.running = True
+            send_pretty_message(self.console_buffer, self.websocket_manager,  "success", "✅ OpenSimulator iniciado correctamente.")
             print("✅ OpenSimulator iniciado correctamente.")
 
     def stop_process(self):
@@ -43,18 +45,22 @@ class OpenSimProcess:
                 self.process.wait()
                 self.process = None
                 self.running = False
+                send_pretty_message(self.console_buffer, self.websocket_manager,  "success", "🛑 OpenSimulator detenido correctamente")
                 print("🛑 OpenSimulator detenido correctamente.")
             else:
+                send_pretty_message(self.console_buffer, self.websocket_manager,  "warning", "⚠️ OpenSimulator no estaba en ejecución.")
                 print("⚠️ OpenSimulator no estaba en ejecución.")
 
     async def send_command(self, command):
         with self.lock:
             if not self.running:
+                send_pretty_message(self.console_buffer, self.websocket_manager,  "error", "❌ No se puede enviar comandos. OpenSimulator no está en ejecución.")                
                 error_msg = "❌ No se puede enviar comandos. OpenSimulator no está en ejecución."
                 print(error_msg)
                 return error_msg
 
             if not self.region_found:
+                send_pretty_message(self.console_buffer, self.websocket_manager,  "warning", "⏳ No se pueden enviar comandos hasta que la región esté completamente cargada.")                
                 error_msg = "⏳ No se pueden enviar comandos hasta que la región esté completamente cargada."
                 print(error_msg)
                 return error_msg
@@ -67,7 +73,7 @@ class OpenSimProcess:
                 # Ahora envía el comando a OpenSimulator
                 self.process.stdin.write(command + "\n")
                 self.process.stdin.flush()
-
+                print(f"📩 Comando enviado: {command}")
 
                 self.logger.log_command(command)
 

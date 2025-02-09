@@ -4,7 +4,7 @@ from typing import Optional
 def send_pretty_message(buffer, websocket_manager: Optional[object], message_type: str, message: str):
     message_prefix = ""
     if message_type == "success":
-        message_prefix = "🟢"
+        message_prefix = "✅"
     elif message_type == "error":
         message_prefix = "❌"
     elif message_type == "info":
