@@ -1,7 +1,7 @@
 # opensim_process.py
 import subprocess
 import asyncio
-import threading  # 🔒 Importamos threading para el Lock
+import threading
 
 class OpenSimProcess:
     def __init__(self, executable_path, working_dir):
@@ -15,7 +15,6 @@ class OpenSimProcess:
         self.lock = threading.Lock()
 
     def start_process(self):
-        """ Inicia OpenSimulator solo si no está en ejecución. """
         with self.lock:
             if self.running:
                 print("❌ OpenSimulator ya está en ejecución.")
@@ -34,7 +33,6 @@ class OpenSimProcess:
             print("✅ OpenSimulator iniciado correctamente.")
 
     def stop_process(self):
-        """ Detiene OpenSimulator si está en ejecución. """
         with self.lock:
             if self.process and self.process.poll() is None:
                 self.process.terminate()
@@ -46,8 +44,19 @@ class OpenSimProcess:
                 print("⚠️ OpenSimulator no estaba en ejecución.")
 
     def send_command(self, command):
-        """ Envía un comando a la consola de OpenSimulator. """
-        if self.process and self.process.stdin:
-            self.process.stdin.write(command + "\n")
-            self.process.stdin.flush()
+        with self.lock:
+            if not self.running:
+                print("❌ No se puede enviar comandos. OpenSimulator no está en ejecución.")
+                return "Error: OpenSimulator no está en ejecución."
+
+            if not self.region_found:
+                print("⏳ No se pueden enviar comandos hasta que la región esté completamente cargada.")
+                return "Error: La región aún no está lista."
+
+            if self.process and self.process.stdin:
+                self.process.stdin.write(command + "\n")
+                self.process.stdin.flush()
+                print(f"📩 Comando enviado: {command}")
+                return f"Comando enviado: {command}"
+
 

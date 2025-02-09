@@ -11,5 +11,9 @@ def setup_routes(app, opensim):
         if not command:
             raise HTTPException(status_code=400, detail="No command provided")
 
-        opensim.send_command(command)
-        return {"message": f"Command '{command}' sent to OpenSimulator"}
+        result = opensim.send_command(command)
+
+        if "Error" in result:
+            raise HTTPException(status_code=400, detail=result)
+
+        return {"message": result}
