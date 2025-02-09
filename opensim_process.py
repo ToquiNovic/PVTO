@@ -2,6 +2,7 @@
 import subprocess
 import asyncio
 import threading
+from command_logger import CommandLogger
 
 class OpenSimProcess:
     def __init__(self, executable_path, working_dir):
@@ -13,7 +14,8 @@ class OpenSimProcess:
         self.process = None  
         self.running = False
         self.lock = threading.Lock()
-
+        self.logger = CommandLogger()
+        
     def start_process(self):
         with self.lock:
             if self.running:
@@ -57,6 +59,6 @@ class OpenSimProcess:
                 self.process.stdin.write(command + "\n")
                 self.process.stdin.flush()
                 print(f"📩 Comando enviado: {command}")
+
+                self.logger.log_command(command)
                 return f"Comando enviado: {command}"
-
-
