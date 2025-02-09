@@ -1,3 +1,4 @@
+# fastapi_routes.py
 from fastapi import HTTPException
 from pydantic import BaseModel
 
@@ -11,8 +12,10 @@ def setup_routes(app, opensim):
         if not command:
             raise HTTPException(status_code=400, detail="No command provided")
 
-        result = opensim.send_command(command)
+        # Espera correctamente la corutina
+        result = await opensim.send_command(command)
 
+        # Verifica si hay un error en el resultado
         if "Error" in result:
             raise HTTPException(status_code=400, detail=result)
 
