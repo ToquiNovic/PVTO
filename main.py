@@ -5,13 +5,10 @@ import uvicorn
 from fastapi import FastAPI, WebSocket
 from fastapi.routing import APIRouter
 
+from config import OPEN_SIM_DIR, OPEN_SIM_PATH, FASTAPI_HOST, FASTAPI_PORT
 from opensim_process import OpenSimProcess
 from websocket_handler import websocket_endpoint
 from fastapi_routes import setup_routes
-
-# Configuración del directorio de OpenSimulator
-OPEN_SIM_DIR = r"C:\Users\Administrador\Desktop\Opcion de Grado Daniel\servers\UA3D-1\bin"
-OPEN_SIM_PATH = os.path.join(OPEN_SIM_DIR, "OpenSim.exe")
 
 # Instancia de OpenSimProcess para manejar el proceso
 opensim = OpenSimProcess(OPEN_SIM_PATH, OPEN_SIM_DIR)
@@ -31,7 +28,7 @@ app.include_router(router)
 
 # Iniciar el servidor FastAPI en un hilo separado
 def start_fastapi():
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT)
 
 fastapi_thread = Thread(target=start_fastapi)
 fastapi_thread.start()
