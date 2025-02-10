@@ -2,8 +2,8 @@
 import subprocess
 import asyncio
 import threading
-from command_logger import CommandLogger
-from message_manager import send_pretty_message
+from utils.command_logger import CommandLogger
+from utils.message_manager import send_pretty_message
 
 class OpenSimProcess:
     def __init__(self, executable_path, working_dir, websocket_manager=None):

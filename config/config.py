@@ -12,3 +12,8 @@ OPEN_SIM_PATH = os.path.join(OPEN_SIM_DIR, OPEN_SIM_EXECUTABLE) if OPEN_SIM_DIR 
 # Configuración de FastAPI
 FASTAPI_HOST = os.getenv("FASTAPI_HOST", "0.0.0.0")
 FASTAPI_PORT = int(os.getenv("FASTAPI_PORT", 5000))
+
+# UA3D CREDENTIALS
+UA3D_USER = os.getenv("UA3D_USER", "user.ua3d")
+UA3D_PASS = os.getenv("UA3D_PASS", "password")
+UA3D_BACK = os.getenv("UA3D_BACK", "http://localhost:3000")

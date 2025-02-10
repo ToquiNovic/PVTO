@@ -5,10 +5,10 @@ import uvicorn
 from fastapi import FastAPI, WebSocket
 from fastapi.routing import APIRouter
 
-from config import OPEN_SIM_DIR, OPEN_SIM_PATH, FASTAPI_HOST, FASTAPI_PORT
+from config.config import OPEN_SIM_DIR, OPEN_SIM_PATH, FASTAPI_HOST, FASTAPI_PORT
 from opensim_process import OpenSimProcess
-from websocket_handler import websocket_endpoint
-from fastapi_routes import setup_routes
+from utils.websocket_handler import websocket_endpoint
+from routes.fastapi_routes import setup_routes
 from opensim_reader import read_output 
 
 # Instancia de OpenSimProcess

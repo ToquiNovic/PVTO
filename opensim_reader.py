@@ -1,6 +1,22 @@
 # opensim_reader.py
 import datetime
 import os
+import asyncio
+from UA3DAPI.external_service import ExternalService
+
+async def fetch_server_status(server_status: str):
+    """Hace la petición a la ruta '/server-status' para obtener el estado del servidor"""
+    try:
+        # Llama al servicio externo para obtener el estado
+        status = await ExternalService.get_server_status(server_status)
+
+        # Imprime la respuesta en la consola
+        print(f"Respuesta de la API para el estado del servidor: {status}")
+
+        return status
+    except Exception as e:
+        print(f"Error al obtener el estado del servidor: {e}")
+        return None
 
 def read_output(opensim):
     log_created = False  
@@ -29,3 +45,11 @@ def read_output(opensim):
 
                 opensim.process.stdin.write("alert hola\n")
                 opensim.process.stdin.flush()
+
+                # Crea un nuevo loop de eventos en este hilo
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+                # Llama a la API para obtener el estado del servidor
+                server_status = "RUNNING_SERVER" 
+                loop.run_until_complete(fetch_server_status(server_status))
