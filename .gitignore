@@ -1,4 +1,4 @@
-/__pycache__
-./logs
+**/__pycache__/
+**/CommandHistory.txt/
 .env
 region_log.txt
