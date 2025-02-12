@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
 
 from config.config import OPEN_SIM_DIR, OPEN_SIM_PATH, FASTAPI_HOST, FASTAPI_PORT
-from opensim_process import OpenSimProcess
+from opensim.opensim_process import OpenSimProcess
 from utils.websocket_handler import websocket_endpoint
 from routes.fastapi_routes import setup_routes
-from opensim_reader import read_output
+from opensim.opensim_reader import read_output
 from UA3DAPI.controllers.external_controller import ua3d_update_server_status, get_opensim_mode
 
 # Instancia de OpenSimProcess
