@@ -17,3 +17,8 @@ FASTAPI_PORT = int(os.getenv("FASTAPI_PORT", 5000))
 UA3D_USER = os.getenv("UA3D_USER", "user.ua3d")
 UA3D_PASS = os.getenv("UA3D_PASS", "password")
 UA3D_BACK = os.getenv("UA3D_BACK", "http://localhost:3000")
+ID_SERVER = os.getenv("ID_SERVER", "1")
+
+# OPENSIM ADMIN
+OPENSIM_UUID = os.getenv("OPENSIM_UUID", "3213254")
+OPENSIM_PASS = os.getenv("OPENSIM_PASS", "passwordadmin")
