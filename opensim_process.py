@@ -5,6 +5,23 @@ import threading
 from utils.command_logger import CommandLogger
 from utils.message_manager import send_pretty_message
 
+from UA3DAPI.controllers.external_controller import ua3d_get_server_status
+
+async def is_server_online():
+    try:
+        server_data = await ua3d_get_server_status()
+
+        if not isinstance(server_data, dict):
+            print("⚠️ Respuesta inválida del servidor.")
+            return False
+
+        server_status = server_data.get("status", {}).get("name", "")
+        return server_status == "ONLINE"
+
+    except Exception as e:
+        print(f"🚨 Error al verificar el estado del servidor: {e}")
+        return False
+
 class OpenSimProcess:
     def __init__(self, executable_path, working_dir, websocket_manager=None):
         self.executable_path = executable_path
@@ -50,27 +67,33 @@ class OpenSimProcess:
             else:
                 send_pretty_message(self.console_buffer, self.websocket_manager,  "warning", "⚠️ OpenSimulator no estaba en ejecución.")
                 print("⚠️ OpenSimulator no estaba en ejecución.")
-
+            
     async def send_command(self, command):
         with self.lock:
             if not self.running:
-                send_pretty_message(self.console_buffer, self.websocket_manager,  "error", "❌ No se puede enviar comandos. OpenSimulator no está en ejecución.")                
-                error_msg = "❌ No se puede enviar comandos. OpenSimulator no está en ejecución."
+                send_pretty_message(self.console_buffer, self.websocket_manager, "error", "❌ OpenSimulator no está en ejecución.")
+                error_msg = "❌ OpenSimulator no está en ejecución."
                 print(error_msg)
                 return error_msg
 
             if not self.region_found:
-                send_pretty_message(self.console_buffer, self.websocket_manager,  "warning", "⏳ No se pueden enviar comandos hasta que la región esté completamente cargada.")                
+                send_pretty_message(self.console_buffer, self.websocket_manager, "warning", "⏳ No se pueden enviar comandos hasta que la región esté completamente cargada.")
                 error_msg = "⏳ No se pueden enviar comandos hasta que la región esté completamente cargada."
                 print(error_msg)
                 return error_msg
 
+        # 🔹 Verifica si el servidor está ONLINE antes de enviar comandos
+        if not await is_server_online():
+            send_pretty_message(self.console_buffer, self.websocket_manager, "warning", "🚫 No se pueden enviar comandos hasta que el servidor esté ONLINE.")
+            error_msg = "🚫 No se pueden enviar comandos hasta que el servidor esté ONLINE."
+            print(error_msg)
+            return error_msg
+
+        with self.lock:
             if self.process and self.process.stdin:
-                # Usar la función send_pretty_message para enviar el mensaje bonito
                 send_pretty_message(self.console_buffer, self.websocket_manager, "success", "Comando enviado con éxito.")
                 send_pretty_message(self.console_buffer, self.websocket_manager, "info", f"📩 Comando: {command}")
-                
-                # Ahora envía el comando a OpenSimulator
+
                 self.process.stdin.write(command + "\n")
                 self.process.stdin.flush()
                 print(f"📩 Comando enviado: {command}")
