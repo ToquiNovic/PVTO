@@ -29,6 +29,7 @@ async def noob_mode(opensim):
                 if re.search(pattern, output):
                     print(f"📝 Respondiendo: {response.strip()}")
                     await send_console_command(opensim, response)
+                    await ua3d_update_server_status("ONLINE")
 
     except Exception as e:
         print(f"🚨 Error en noob_mode: {e}")
@@ -45,6 +46,7 @@ async def read_output(opensim, mode="default"):
         opensim.console_event.set()
         
         if mode == "nood":
+            await ua3d_update_server_status("RUNNING_NOOB")
             await noob_mode(opensim)
         else:
             if 'Region' in output and not opensim.region_found:
