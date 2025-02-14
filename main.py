@@ -73,7 +73,6 @@ async def start_opensim():
 async def stop_opensim():
     if not opensim.running:
         return {"error": "OpenSimulator no está en ejecución."}
-
     try:
         # Primero, actualizar el estado a "SHUTDOWN_SERVER"
         await ua3d_update_server_status("SHUTDOWN_SERVER")  
@@ -113,6 +112,14 @@ async def get_command_history():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al leer el historial: {str(e)}")
+    
+@app.get("/kill")
+async def kill_server():
+    try:
+        print("🛑 Apagando el servidor...")
+        os._exit(0)
+    except Exception as e:
+        return {"error": f"Error al apagar el servidor: {str(e)}"}
 
 # 🔹 Iniciar el servidor FastAPI
 if __name__ == "__main__":
