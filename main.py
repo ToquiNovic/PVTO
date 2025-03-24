@@ -12,6 +12,7 @@ from utils.websocket_handler import websocket_endpoint
 from routes.fastapi_routes import setup_routes
 from opensim.opensim_reader import read_output
 from UA3DAPI.controllers.external_controller import ua3d_update_server_status, get_opensim_mode
+from utils.killprocesses import kill_related_processes
 
 # Instancia de OpenSimProcess
 opensim = OpenSimProcess(OPEN_SIM_PATH, OPEN_SIM_DIR)
@@ -116,7 +117,8 @@ async def get_command_history():
 @app.get("/kill")
 async def kill_server():
     try:
-        print("🛑 Apagando el servidor...")
+        print("🛑 Apagando el servidor y procesos relacionados...")
+        kill_related_processes()
         os._exit(0)
     except Exception as e:
         return {"error": f"Error al apagar el servidor: {str(e)}"}
